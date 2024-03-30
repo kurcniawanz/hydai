@@ -6,7 +6,12 @@ import 'package:flutter/material.dart';
 class CheckoutCard extends StatelessWidget {
   const CheckoutCard({
     Key? key,
+    required this.totalPrice,
+    required this.onCheckout,
   }) : super(key: key);
+
+  final String totalPrice;
+  final Function() onCheckout;
 
   @override
   Widget build(BuildContext context) {
@@ -60,14 +65,15 @@ class CheckoutCard extends StatelessWidget {
             const SizedBox(height: 16),
             Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: Text.rich(
                     TextSpan(
                       text: "Total:\n",
                       children: [
                         TextSpan(
-                          text: "\$337.15",
-                          style: TextStyle(fontSize: 16, color: Colors.black),
+                          text: "\$$totalPrice",
+                          style: const TextStyle(
+                              fontSize: 16, color: Colors.black),
                         ),
                       ],
                     ),
@@ -75,7 +81,7 @@ class CheckoutCard extends StatelessWidget {
                 ),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: onCheckout,
                     child: const Text(
                       "Check Out",
                       style: TextStyle(color: Color(0xFF083652)),

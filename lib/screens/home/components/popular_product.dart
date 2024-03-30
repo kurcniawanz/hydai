@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:shop_app/network/api.dart';
 
 import '../../../components/product_card.dart';
 import '../../../models/product.dart';
@@ -6,8 +10,68 @@ import '../../details/details_screen.dart';
 import '../../products/products_screen.dart';
 import 'section_title.dart';
 
-class PopularProducts extends StatelessWidget {
+class PopularProducts extends StatefulWidget {
   const PopularProducts({super.key});
+
+  @override
+  State<PopularProducts> createState() => _PopularProductsState();
+}
+
+class _PopularProductsState extends State<PopularProducts> {
+  List<Product> dataProducts = [];
+
+  @override
+  void initState() {
+    _getproduct();
+    super.initState();
+  }
+
+  Future<void> _getproduct() async {
+    var data = {
+      "sku": "%",
+      "name": "%",
+      "categ_name": "%",
+      "limit": 5,
+      "offset": 0
+    };
+    var res = await Network().auth(data, '/product');
+    var body = json.decode(res.body);
+
+    if (body['result']) {
+      if (body['data'].isNotEmpty) {
+        List<Product> litsdata = [];
+        for (var item in body['data']) {
+          litsdata.add(
+            Product(
+              id: item['id'],
+              images: [
+                "assets/images/ps4_console_white_1.png",
+                "assets/images/ps4_console_white_2.png",
+                "assets/images/ps4_console_white_3.png",
+                "assets/images/ps4_console_white_4.png",
+              ],
+              colors: [
+                const Color(0xFFF6625E),
+                const Color(0xFF836DB8),
+                const Color(0xFFDECB9C),
+                Colors.white,
+              ],
+              title: item['name'],
+              price: item['list_price'],
+              description: item['description_sale'],
+              rating: 5,
+              isFavourite: true,
+              isPopular: true,
+            ),
+          );
+        }
+
+        setState(() {
+          dataProducts = litsdata;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,18 +91,18 @@ class PopularProducts extends StatelessWidget {
           child: Row(
             children: [
               ...List.generate(
-                demoProducts.length,
+                dataProducts.length,
                 (index) {
-                  if (demoProducts[index].isPopular) {
+                  if (dataProducts[index].isPopular) {
                     return Padding(
                       padding: const EdgeInsets.only(left: 20),
                       child: ProductCard(
-                        product: demoProducts[index],
+                        product: dataProducts[index],
                         onPress: () => Navigator.pushNamed(
                           context,
                           DetailsScreen.routeName,
                           arguments: ProductDetailsArguments(
-                              product: demoProducts[index]),
+                              product: dataProducts[index]),
                         ),
                       ),
                     );

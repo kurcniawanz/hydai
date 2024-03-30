@@ -2,7 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:provider/provider.dart';
 import 'package:shop_app/components/product_card.dart';
+import 'package:shop_app/helper/cart_provider.dart';
 import 'package:shop_app/models/product.dart';
 
 import '../../network/api.dart';
@@ -21,36 +24,37 @@ class FavoriteScreen extends StatefulWidget {
 }
 
 class _FavoriteScreenState extends State<FavoriteScreen> {
-  List<Product> dataProducts = [];
+  static const pageSize = 10;
+  final PagingController<int, Product> pagingController =
+      PagingController(firstPageKey: 0);
 
   @override
   void initState() {
-    _getproduct();
+    pagingController.addPageRequestListener((pageKey) {
+      _getproduct(pageKey);
+    });
     super.initState();
   }
 
-  Future<void> _getproduct() async {
-    EasyLoading.show(status: 'loading...');
-
+  Future<void> _getproduct(int pageKey) async {
     var data = {
       "sku": "%",
       "name": "%",
       "categ_name": "%",
-      "limit": 1000,
-      "offset": 0
+      "limit": pageSize,
+      "offset": pageKey
     };
     var res = await Network().auth(data, '/product');
     var body = json.decode(res.body);
+    final isLastPage = body['data'].length < pageSize;
 
     if (body['result']) {
-      EasyLoading.dismiss();
-
       if (body['data'].isNotEmpty) {
-        List<Product> litsdata = [];
+        List<Product> listdata = [];
         for (var item in body['data']) {
-          litsdata.add(
+          listdata.add(
             Product(
-              id: 1,
+              id: item['id'],
               images: [
                 "assets/images/ps4_console_white_1.png",
                 "assets/images/ps4_console_white_2.png",
@@ -73,9 +77,12 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
           );
         }
 
-        setState(() {
-          dataProducts = litsdata;
-        });
+        if (isLastPage) {
+          pagingController.appendLastPage(listdata);
+        } else {
+          final nextPageKey = pageKey + listdata.length;
+          pagingController.appendPage(listdata, nextPageKey);
+        }
       }
     } else {
       EasyLoading.dismiss();
@@ -94,11 +101,15 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
               children: [
                 const Expanded(child: SearchField()),
                 const SizedBox(width: 16),
-                IconBtnWithCounter(
-                  svgSrc: "assets/icons/Cart Icon.svg",
-                  numOfitem: 3,
-                  press: () =>
-                      Navigator.pushNamed(context, CartScreen.routeName),
+                Consumer<CartProvider>(
+                  builder: (context, value, child) {
+                    return IconBtnWithCounter(
+                      svgSrc: "assets/icons/Cart Icon.svg",
+                      numOfitem: value.getCounter(),
+                      press: () =>
+                          Navigator.pushNamed(context, CartScreen.routeName),
+                    );
+                  },
                 ),
                 // const SizedBox(width: 8),
                 // IconBtnWithCounter(
@@ -112,21 +123,23 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(16),
-              child: GridView.builder(
-                itemCount: dataProducts.length,
+              child: PagedGridView<int, Product>(
+                pagingController: pagingController,
                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                   maxCrossAxisExtent: 200,
                   childAspectRatio: 0.7,
                   mainAxisSpacing: 20,
                   crossAxisSpacing: 16,
                 ),
-                itemBuilder: (context, index) => ProductCard(
-                  product: dataProducts[index],
-                  onPress: () => Navigator.pushNamed(
-                    context,
-                    DetailsScreen.routeName,
-                    arguments:
-                        ProductDetailsArguments(product: dataProducts[index]),
+                builderDelegate: PagedChildBuilderDelegate<Product>(
+                  itemBuilder: (context, item, index) => ProductCard(
+                    product: item,
+                    onPress: () => Navigator.pushNamed(
+                      context,
+                      DetailsScreen.routeName,
+                      arguments:
+                          ProductDetailsArguments(product: item),
+                    ),
                   ),
                 ),
               ),

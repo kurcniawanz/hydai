@@ -1,16 +1,37 @@
 import 'product.dart';
 
 class Cart {
-  final Product product;
-  final int numOfItem;
+  late final int? id;
+  final String? productId;
+  final String? productName;
+  final double? productPrice;
+  final int? quantity;
+  final String? image;
 
-  Cart({required this.product, required this.numOfItem});
+  Cart(
+      {required this.id,
+      required this.productId,
+      required this.productName,
+      required this.productPrice,
+      required this.quantity,
+      required this.image});
+
+  Cart.fromMap(Map<dynamic, dynamic> data)
+      : id = data['id'],
+        productId = data['productId'],
+        productName = data['productName'],
+        productPrice = data['productPrice'],
+        quantity = (data['quantity']),
+        image = data['image'];
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'productId': productId,
+      'productName': productName,
+      'productPrice': productPrice,
+      'quantity': quantity,
+      'image': image,
+    };
+  }
 }
-
-// Demo data for our cart
-
-List<Cart> demoCarts = [
-  Cart(product: demoProducts[0], numOfItem: 2),
-  Cart(product: demoProducts[1], numOfItem: 1),
-  Cart(product: demoProducts[3], numOfItem: 1),
-];
