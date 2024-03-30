@@ -4,13 +4,22 @@ import '../../../components/rounded_icon_btn.dart';
 import '../../../constants.dart';
 import '../../../models/product.dart';
 
-class ColorDots extends StatelessWidget {
+class ColorDots extends StatefulWidget {
   const ColorDots({
     Key? key,
     required this.product,
+    required this.onUpdateCount,
   }) : super(key: key);
 
   final Product product;
+  final Function(int) onUpdateCount;
+
+  @override
+  State<ColorDots> createState() => _ColorDotsState();
+}
+
+class _ColorDotsState extends State<ColorDots> {
+  var productCount = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +39,25 @@ class ColorDots extends StatelessWidget {
           const Spacer(),
           RoundedIconBtn(
             icon: Icons.remove,
-            press: () {},
+            press: () {
+              if (productCount > 1) {
+                productCount -= 1;
+                widget.onUpdateCount(productCount);
+                setState(() {});
+              }
+            },
           ),
-          const SizedBox(width: 20),
+          const SizedBox(width: 12),
+          Text(productCount.toString()),
+          const SizedBox(width: 12),
           RoundedIconBtn(
             icon: Icons.add,
             showShadow: true,
-            press: () {},
+            press: () {
+              productCount += 1;
+              widget.onUpdateCount(productCount);
+              setState(() {});
+            },
           ),
         ],
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/screens/products/products_screen.dart';
 
 import '../../../constants.dart';
 
@@ -11,6 +12,14 @@ class SearchField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Form(
       child: TextFormField(
+        onFieldSubmitted: (value) {
+          Navigator.pushNamed(
+            context,
+            ProductsScreen.routeName,
+            arguments:
+                ProductArguments(title: value, name: value, category: '%'),
+          );
+        },
         onChanged: (value) {},
         decoration: InputDecoration(
           filled: true,
