@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+// import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shop_app/models/category.dart';
 import 'package:shop_app/network/api.dart';
 import 'package:shop_app/screens/products/products_screen.dart';
@@ -34,9 +34,7 @@ class _CategoriesState extends State<Categories> {
         for (var item in body['data']) {
           litsdata.add(
             Category(
-                id: item['id'],
-                name: item['name'],
-                icon: "assets/icons/Game Icon.svg"),
+                id: item['id'], name: item['name'], icon: item['link_image']),
           );
         }
 
@@ -96,18 +94,15 @@ class CategoryCard extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              padding: const EdgeInsets.all(16),
-              height: 56,
-              width: 56,
+              padding: const EdgeInsets.all(6),
+              height: 60,
+              width: 60,
               decoration: BoxDecoration(
                 color: const Color(0xFFcce235),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: SvgPicture.asset(
-                icon,
-                // ignore: deprecated_member_use
-                color: const Color(0xFF083652),
-              ),
+              child: Image.network(icon,
+                  width: 300, height: 300, fit: BoxFit.fill),
             ),
             const SizedBox(height: 4),
             Text(text, textAlign: TextAlign.center)

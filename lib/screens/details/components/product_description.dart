@@ -53,13 +53,14 @@ class ProductDescription extends StatelessWidget {
         // ),
         Padding(
           padding: const EdgeInsets.only(
-            top: 10,
+            top: 20,
             left: 20,
-            right: 64,
+            right: 20,
           ),
           child: Text(
             product.description,
-            maxLines: 3,
+            maxLines: 6,
+            textAlign: TextAlign.justify,
           ),
         ),
         // Padding(

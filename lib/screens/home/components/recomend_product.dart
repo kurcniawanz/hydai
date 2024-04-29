@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-// import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:shop_app/network/api.dart';
 
 import '../../../components/product_card.dart';
@@ -10,14 +9,14 @@ import '../../details/details_screen.dart';
 import '../../products/products_screen.dart';
 import 'section_title.dart';
 
-class PopularProducts extends StatefulWidget {
-  const PopularProducts({super.key});
+class RecommendProducts extends StatefulWidget {
+  const RecommendProducts({super.key});
 
   @override
-  State<PopularProducts> createState() => _PopularProductsState();
+  State<RecommendProducts> createState() => _RecommendProductsState();
 }
 
-class _PopularProductsState extends State<PopularProducts> {
+class _RecommendProductsState extends State<RecommendProducts> {
   List<Product> dataProducts = [];
 
   @override
@@ -31,8 +30,8 @@ class _PopularProductsState extends State<PopularProducts> {
       "sku": "%",
       "name": "%",
       "categ_name": "%",
-      "popular": "1",
-      "recomend": "%",
+      "popular": "%",
+      "recomend": "1",
       "limit": 10,
       "offset": 0
     };
@@ -83,7 +82,7 @@ class _PopularProductsState extends State<PopularProducts> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: SectionTitle(
-            title: "Popular Products",
+            title: "Recommend Products",
             press: () {
               Navigator.pushNamed(context, ProductsScreen.routeName);
             },

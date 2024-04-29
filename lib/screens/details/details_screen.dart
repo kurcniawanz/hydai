@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+// import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/helper/cart_provider.dart';
 import 'package:shop_app/helper/db_helper.dart';
@@ -114,28 +114,28 @@ class _DetailsScreenState extends State<DetailsScreen> {
         actions: [
           Row(
             children: [
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Row(
-                  children: [
-                    Text(
-                      product.rating.toString(),
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    SvgPicture.asset("assets/icons/Star Icon.svg"),
-                  ],
-                ),
-              ),
+              // Container(
+              //   padding:
+              //       const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              //   decoration: BoxDecoration(
+              //     color: Colors.white,
+              //     borderRadius: BorderRadius.circular(14),
+              //   ),
+              //   child: Row(
+              //     children: [
+              //       Text(
+              //         product.rating.toString(),
+              //         style: const TextStyle(
+              //           fontSize: 14,
+              //           color: Colors.black,
+              //           fontWeight: FontWeight.w600,
+              //         ),
+              //       ),
+              //       const SizedBox(width: 4),
+              //       SvgPicture.asset("assets/icons/Star Icon.svg"),
+              //     ],
+              //   ),
+              // ),
               const SizedBox(width: 8),
               Consumer<CartProvider>(
                 builder: (context, value, child) {

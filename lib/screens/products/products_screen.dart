@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+// import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:shop_app/components/product_card.dart';
 import 'package:shop_app/models/product.dart';
@@ -47,25 +47,27 @@ class _ProductsScreenState extends State<ProductsScreen> {
       "name": args?.name,
       "categ_name": args?.category,
       "limit": pageSize,
-      "offset": pageKey
+      "offset": pageKey,
+      "popular": "%",
+      "recomend": "%",
     };
     var res = await Network().auth(data, '/product');
     var body = json.decode(res.body);
 
     final isLastPage = body['data'].length < pageSize;
+    List<Product> listdata = [];
 
     if (body['result']) {
       if (body['data'].isNotEmpty) {
-        List<Product> listdata = [];
         for (var item in body['data']) {
           listdata.add(
             Product(
               id: item['id'],
               images: [
-                "assets/images/ps4_console_white_1.png",
-                "assets/images/ps4_console_white_2.png",
-                "assets/images/ps4_console_white_3.png",
-                "assets/images/ps4_console_white_4.png",
+                item['link_image'],
+                item['link_image'],
+                item['link_image'],
+                item['link_image'],
               ],
               colors: [
                 const Color(0xFFF6625E),
@@ -75,6 +77,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
               ],
               title: item['name'],
               price: item['list_price'],
+              pricetext: item['list_price_text'],
               description: item['description_sale'],
               rating: 5,
               isFavourite: true,
@@ -89,7 +92,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
           final nextPageKey = pageKey + listdata.length;
           pagingController.appendPage(listdata, nextPageKey);
         }
+      } else {
+        pagingController.appendPage(listdata, 0);
       }
+    } else {
+      pagingController.appendPage(listdata, 0);
     }
   }
 
@@ -116,8 +123,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 onPress: () => Navigator.pushNamed(
                   context,
                   DetailsScreen.routeName,
-                  arguments:
-                      ProductDetailsArguments(product: item),
+                  arguments: ProductDetailsArguments(product: item),
                 ),
               ),
             ),

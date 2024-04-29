@@ -1,4 +1,4 @@
-import 'dart:convert';
+// import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/helper/cart_provider.dart';
 import 'package:shop_app/helper/db_helper.dart';
 import 'package:shop_app/network/api.dart';
-import 'package:shop_app/screens/init_screen.dart';
+// import 'package:shop_app/screens/init_screen.dart';
 
 import '../../models/cart.dart';
 import 'components/cart_card.dart';
@@ -27,7 +27,7 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
   DBHelper dbHelper = DBHelper();
   List<Cart> carts = [];
-  String totalPrice = "\$0";
+  String totalPrice = "0";
 
   @override
   void initState() {

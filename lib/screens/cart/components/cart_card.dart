@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-
+import 'package:auto_size_text/auto_size_text.dart';
 import '../../../constants.dart';
 import '../../../models/cart.dart';
+import 'package:intl/intl.dart';
 
 class CartCard extends StatelessWidget {
   const CartCard({
@@ -13,6 +14,10 @@ class CartCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var formatter = NumberFormat.decimalPatternDigits(
+      locale: 'en_us',
+      decimalDigits: 0,
+    );
     return Row(
       children: [
         SizedBox(
@@ -25,7 +30,7 @@ class CartCard extends StatelessWidget {
                 color: const Color(0xFFF5F6F9),
                 borderRadius: BorderRadius.circular(15),
               ),
-              child: Image.asset(cart.image.toString()),
+              child: Image.network(cart.image.toString()),
             ),
           ),
         ),
@@ -33,21 +38,24 @@ class CartCard extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              cart.productName.toString(),
-              style: const TextStyle(color: Colors.black, fontSize: 13),
-              maxLines: 2,
+            SizedBox(
+              width: 200.0,
+              child: AutoSizeText(
+                cart.productName.toString(),
+                style: const TextStyle(fontSize: 13.0),
+                maxLines: 2,
+              ),
             ),
             const SizedBox(height: 8),
             Text.rich(
               TextSpan(
-                text: "\$${cart.productPrice}",
-                style: const TextStyle(
-                    fontWeight: FontWeight.w600, color: kPrimaryColor),
+                text: "${cart.quantity} x ",
+                style: Theme.of(context).textTheme.bodyLarge,
                 children: [
                   TextSpan(
-                      text: " x${cart.quantity}",
-                      style: Theme.of(context).textTheme.bodyLarge),
+                      text: "Rp. ${formatter.format(cart.productPrice)}",
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w600, color: kPrimaryColor)),
                 ],
               ),
             )

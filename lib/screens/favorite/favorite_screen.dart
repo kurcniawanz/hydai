@@ -42,7 +42,9 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
       "name": "%",
       "categ_name": "%",
       "limit": pageSize,
-      "offset": pageKey
+      "offset": pageKey,
+      "popular": "%",
+      "recomend": "%",
     };
     var res = await Network().auth(data, '/product');
     var body = json.decode(res.body);
@@ -56,10 +58,10 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
             Product(
               id: item['id'],
               images: [
-                "assets/images/ps4_console_white_1.png",
-                "assets/images/ps4_console_white_2.png",
-                "assets/images/ps4_console_white_3.png",
-                "assets/images/ps4_console_white_4.png",
+                item['link_image'],
+                item['link_image'],
+                item['link_image'],
+                item['link_image'],
               ],
               colors: [
                 const Color(0xFFF6625E),
@@ -69,6 +71,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
               ],
               title: item['name'],
               price: item['list_price'],
+              pricetext: item['list_price_text'],
               description: item['description_sale'],
               rating: 5,
               isFavourite: true,
@@ -137,8 +140,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                     onPress: () => Navigator.pushNamed(
                       context,
                       DetailsScreen.routeName,
-                      arguments:
-                          ProductDetailsArguments(product: item),
+                      arguments: ProductDetailsArguments(product: item),
                     ),
                   ),
                 ),

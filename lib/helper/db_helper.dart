@@ -1,6 +1,7 @@
 import 'package:path_provider/path_provider.dart';
 import 'package:shop_app/models/cart.dart';
 import 'package:sqflite/sqflite.dart';
+// ignore: depend_on_referenced_packages
 import 'package:path/path.dart';
 import 'dart:io' as io;
 

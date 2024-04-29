@@ -1,4 +1,7 @@
+// import 'dart:ffi';
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 // import 'package:flutter_svg/flutter_svg.dart';
 
 // import '../../../constants.dart';
@@ -15,6 +18,11 @@ class CheckoutCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var formatter = NumberFormat.decimalPatternDigits(
+      locale: 'en_us',
+      decimalDigits: 0,
+    );
+    var totalPrice2 = num.tryParse(totalPrice)?.toDouble();
     return Container(
       padding: const EdgeInsets.symmetric(
         vertical: 16,
@@ -71,7 +79,7 @@ class CheckoutCard extends StatelessWidget {
                       text: "Total:\n",
                       children: [
                         TextSpan(
-                          text: "\$$totalPrice",
+                          text: "Rp. ${formatter.format(totalPrice2)}",
                           style: const TextStyle(
                               fontSize: 16, color: Colors.black),
                         ),
