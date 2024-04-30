@@ -1,5 +1,7 @@
 // import 'dart:convert';
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -8,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/helper/cart_provider.dart';
 import 'package:shop_app/helper/db_helper.dart';
+import 'package:shop_app/models/payment_method.dart';
 import 'package:shop_app/models/product.dart';
 import 'package:shop_app/network/api.dart';
 // import 'package:shop_app/screens/init_screen.dart';
@@ -31,10 +34,13 @@ class _CartScreenState extends State<CartScreen> {
   String totalPrice = "0";
   final TextEditingController dateController = TextEditingController();
   String dateValue = "";
+  PaymentMethod? paymentMethod;
+  var paymentMethods = List<PaymentMethod>.empty();
 
   @override
   void initState() {
     getCarts();
+    getPaymentMethods();
     super.initState();
   }
 
@@ -52,8 +58,12 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Future<void> checkout() async {
+    if (paymentMethod == null) {
+      showFailedDialog(message: 'Choose Payment Method');
+      return;
+    }
     if (dateValue.isEmpty) {
-      showFailedDialog();
+      showFailedDialog(message: 'Choose Pick Up Date');
       return;
     }
 
@@ -76,6 +86,7 @@ class _CartScreenState extends State<CartScreen> {
       "partner_id": localStorage.getString('id_user'),
       "date_order": formattedDate,
       "date_pickup": dateValue,
+      "payment_method": paymentMethod!.id,
       "note": "",
       "det_orders": products
     };
@@ -120,6 +131,29 @@ class _CartScreenState extends State<CartScreen> {
     }
   }
 
+  Future<void> getPaymentMethods() async {
+    var data = {
+      "name": "%",
+    };
+    var res = await Network().auth(data, '/payment_method');
+    var body = json.decode(res.body);
+
+    if (body['result']) {
+      if (body['data'].isNotEmpty) {
+        List<PaymentMethod> litsdata = [];
+        for (var item in body['data']) {
+          litsdata.add(
+            PaymentMethod(id: item['id'], name: item['name']),
+          );
+        }
+
+        setState(() {
+          paymentMethods = litsdata;
+        });
+      }
+    }
+  }
+
   void showSuccessDialog() {
     showDialog<String>(
       context: context,
@@ -157,17 +191,17 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
-  void showFailedDialog() {
+  void showFailedDialog({required String message}) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
         title: const Text(
           'Hydai',
         ),
-        content: const SizedBox(
+        content: SizedBox(
           width: 150,
           height: 40,
-          child: Center(child: Text('Choose Pick Up Date')),
+          child: Center(child: Text(message)),
         ),
         actions: [
           SizedBox(
@@ -247,6 +281,41 @@ class _CartScreenState extends State<CartScreen> {
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: InputDecorator(
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<PaymentMethod>(
+                  isExpanded: true,
+                  value: paymentMethod,
+                  hint: const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Text('Payment Method'),
+                  ),
+                  items: paymentMethods.map((PaymentMethod value) {
+                    return DropdownMenuItem<PaymentMethod>(
+                      value: value,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(value.name),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    paymentMethod = value;
+                    setState(() {});
+                  },
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
           GestureDetector(
             onTap: () async {
               var date = await showDatePicker(
