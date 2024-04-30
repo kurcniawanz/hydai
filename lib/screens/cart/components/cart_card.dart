@@ -5,12 +5,16 @@ import '../../../models/cart.dart';
 import 'package:intl/intl.dart';
 
 class CartCard extends StatelessWidget {
-  const CartCard({
-    Key? key,
-    required this.cart,
-  }) : super(key: key);
+  const CartCard(
+      {Key? key,
+      required this.cart,
+      required this.onAdd,
+      required this.onRemove})
+      : super(key: key);
 
   final Cart cart;
+  final Function() onAdd;
+  final Function() onRemove;
 
   @override
   Widget build(BuildContext context) {
@@ -46,16 +50,77 @@ class CartCard extends StatelessWidget {
                 maxLines: 2,
               ),
             ),
+            const SizedBox(height: 2),
+            Text(
+              "Rp. ${formatter.format(cart.productPrice)}",
+              style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: kSecondaryColor,
+                  fontSize: 12),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.zero,
+                  width: 24,
+                  height: 24,
+                  decoration: const BoxDecoration(
+                    color: Colors.redAccent,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(100),
+                    ),
+                  ),
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    onPressed: onRemove,
+                    icon: const Icon(
+                      Icons.remove,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  cart.quantity.toString(),
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: EdgeInsets.zero,
+                  width: 24,
+                  height: 24,
+                  decoration: const BoxDecoration(
+                    color: Colors.green,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(100),
+                    ),
+                  ),
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    onPressed: onAdd,
+                    icon: const Icon(
+                      Icons.add,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 8),
             Text.rich(
               TextSpan(
-                text: "${cart.quantity} x ",
+                text: "",
                 style: Theme.of(context).textTheme.bodyLarge,
                 children: [
                   TextSpan(
-                      text: "Rp. ${formatter.format(cart.productPrice)}",
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w600, color: kPrimaryColor)),
+                    text:
+                        "Rp. ${formatter.format(cart.productPrice! * cart.quantity!)}",
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w600, color: kPrimaryColor),
+                  ),
                 ],
               ),
             )
