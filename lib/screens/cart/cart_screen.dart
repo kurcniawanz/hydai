@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/helper/cart_provider.dart';
 import 'package:shop_app/helper/db_helper.dart';
+import 'package:shop_app/models/product.dart';
 import 'package:shop_app/network/api.dart';
 // import 'package:shop_app/screens/init_screen.dart';
 
@@ -28,6 +29,8 @@ class _CartScreenState extends State<CartScreen> {
   DBHelper dbHelper = DBHelper();
   List<Cart> carts = [];
   String totalPrice = "0";
+  final TextEditingController dateController = TextEditingController();
+  String dateValue = "";
 
   @override
   void initState() {
@@ -49,6 +52,11 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Future<void> checkout() async {
+    if (dateValue.isEmpty) {
+      showFailedDialog();
+      return;
+    }
+
     EasyLoading.show(status: 'loading...');
 
     SharedPreferences localStorage = await SharedPreferences.getInstance();
@@ -67,12 +75,49 @@ class _CartScreenState extends State<CartScreen> {
     var data = {
       "partner_id": localStorage.getString('id_user'),
       "date_order": formattedDate,
+      "date_pickup": dateValue,
       "note": "",
       "det_orders": products
     };
     await Network().auth(data, '/checkout');
     EasyLoading.dismiss();
     showSuccessDialog();
+  }
+
+  void addCart(Cart cart) {
+    dbHelper
+        .insert(
+      Cart(
+        id: cart.id,
+        productId: cart.productId,
+        productName: cart.productName,
+        productPrice: cart.productPrice,
+        quantity: 1,
+        image: cart.image,
+      ),
+    )
+        .then((value) {
+      getCarts();
+    });
+  }
+
+  void removeCart(Cart cart) {
+    if (cart.quantity! > 1) {
+      dbHelper
+          .remove(
+        Cart(
+          id: cart.id,
+          productId: cart.productId,
+          productName: cart.productName,
+          productPrice: cart.productPrice,
+          quantity: cart.quantity! - 1,
+          image: cart.image,
+        ),
+      )
+          .then((value) {
+        getCarts();
+      });
+    }
   }
 
   void showSuccessDialog() {
@@ -104,6 +149,35 @@ class _CartScreenState extends State<CartScreen> {
                   Navigator.pop(context);
                 });
               },
+              child: const Text('OK'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void showFailedDialog() {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text(
+          'Hydai',
+        ),
+        content: const SizedBox(
+          width: 150,
+          height: 40,
+          child: Center(child: Text('Choose Pick Up Date')),
+        ),
+        actions: [
+          SizedBox(
+            width: 80,
+            height: 30,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+              ),
+              onPressed: () => Navigator.pop(context, 'OK'),
               child: const Text('OK'),
             ),
           ),
@@ -161,14 +235,52 @@ class _CartScreenState extends State<CartScreen> {
                   ],
                 ),
               ),
-              child: CartCard(cart: carts[index]),
+              child: CartCard(
+                cart: carts[index],
+                onAdd: () => addCart(carts[index]),
+                onRemove: () => removeCart(carts[index]),
+              ),
             ),
           ),
         ),
       ),
-      bottomNavigationBar: CheckoutCard(
-        totalPrice: totalPrice,
-        onCheckout: checkout,
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GestureDetector(
+            onTap: () async {
+              var date = await showDatePicker(
+                context: context,
+                firstDate: DateTime.now(),
+                lastDate: DateTime(2050),
+              );
+              if (date != null) {
+                final formatter = DateFormat('E, dd MMM yyyy');
+                dateController.text = formatter.format(date);
+                dateValue = date.toString();
+              }
+            },
+            child: Container(
+              height: 48,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: AbsorbPointer(
+                child: TextField(
+                  controller: dateController,
+                  keyboardType: TextInputType.datetime,
+                  decoration: const InputDecoration(
+                    labelText: "Pick Up Date",
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    suffixIcon: Icon(Icons.calendar_month),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          CheckoutCard(
+            totalPrice: totalPrice,
+            onCheckout: checkout,
+          ),
+        ],
       ),
     );
   }

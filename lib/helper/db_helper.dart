@@ -46,6 +46,15 @@ class DBHelper {
     return cart;
   }
 
+  Future<Cart> remove(Cart cart) async {
+    var dbClient = await database;
+
+    await dbClient!.update('cart', {'quantity': cart.quantity!},
+        where: "id = ?", whereArgs: [cart.id]);
+
+    return cart;
+  }
+
   Future<List<Cart>> getCartList() async {
     var dbClient = await database;
     final List<Map<String, Object?>> queryResult =
