@@ -11,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/helper/cart_provider.dart';
 import 'package:shop_app/helper/db_helper.dart';
 import 'package:shop_app/models/payment_method.dart';
-import 'package:shop_app/models/product.dart';
+// import 'package:shop_app/models/product.dart';
 import 'package:shop_app/network/api.dart';
 // import 'package:shop_app/screens/init_screen.dart';
 
@@ -62,10 +62,10 @@ class _CartScreenState extends State<CartScreen> {
       showFailedDialog(message: 'Choose Payment Method');
       return;
     }
-    if (dateValue.isEmpty) {
-      showFailedDialog(message: 'Choose Pick Up Date');
-      return;
-    }
+    // if (dateValue.isEmpty) {
+    //   showFailedDialog(message: 'Choose Pick Up Date');
+    //   return;
+    // }
 
     EasyLoading.show(status: 'loading...');
 
@@ -85,7 +85,8 @@ class _CartScreenState extends State<CartScreen> {
     var data = {
       "partner_id": localStorage.getString('id_user'),
       "date_order": formattedDate,
-      "date_pickup": dateValue,
+      // "date_pickup": dateValue,
+      "date_pickup": formattedDate,
       "payment_method": paymentMethod!.id,
       "note": "",
       "det_orders": products
@@ -316,35 +317,35 @@ class _CartScreenState extends State<CartScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          GestureDetector(
-            onTap: () async {
-              var date = await showDatePicker(
-                context: context,
-                firstDate: DateTime.now(),
-                lastDate: DateTime(2050),
-              );
-              if (date != null) {
-                final formatter = DateFormat('E, dd MMM yyyy');
-                dateController.text = formatter.format(date);
-                dateValue = date.toString();
-              }
-            },
-            child: Container(
-              height: 48,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: AbsorbPointer(
-                child: TextField(
-                  controller: dateController,
-                  keyboardType: TextInputType.datetime,
-                  decoration: const InputDecoration(
-                    labelText: "Pick Up Date",
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    suffixIcon: Icon(Icons.calendar_month),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          // GestureDetector(
+          //   onTap: () async {
+          //     var date = await showDatePicker(
+          //       context: context,
+          //       firstDate: DateTime.now(),
+          //       lastDate: DateTime(2050),
+          //     );
+          //     if (date != null) {
+          //       final formatter = DateFormat('E, dd MMM yyyy');
+          //       dateController.text = formatter.format(date);
+          //       dateValue = date.toString();
+          //     }
+          //   },
+          //   child: Container(
+          //     height: 48,
+          //     padding: const EdgeInsets.symmetric(horizontal: 16),
+          //     child: AbsorbPointer(
+          //       child: TextField(
+          //         controller: dateController,
+          //         keyboardType: TextInputType.datetime,
+          //         decoration: const InputDecoration(
+          //           labelText: "Pick Up Date",
+          //           floatingLabelBehavior: FloatingLabelBehavior.always,
+          //           suffixIcon: Icon(Icons.calendar_month),
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
           CheckoutCard(
             totalPrice: totalPrice,
             onCheckout: checkout,
